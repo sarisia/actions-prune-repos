@@ -1,0 +1,42 @@
+name: actions-prune-repos/prepare
+author: Sarisia
+description: List and filter repositories to determine deletion targets
+
+inputs:
+  github-pat:
+    description: GitHub Personal Access Token. Workflow's GITHUB_TOKEN won't work
+    required: true
+  namespace:
+    description: GitHub username or organization name
+    required: true
+    default: ${{ github.repository_owner }}
+  keep-topics:
+    description: Repositories which has topics defined here are excluded from deletion
+    required: false
+  retension-days:
+    description: Prevent deletion for repositories which has pushes in last `retension-days` days
+    required: true
+    default: 90
+  base-epoch:
+    description: |
+      `retension-days` are calculated based on this value. Default to current time.
+      Make sure to set the same value between dry-run and NON dry-run.
+    required: false
+  dry-run:
+    description: Do not actually delete, just print check results
+    required: true
+    default: true
+  mask-private-repository:
+    description: Mask private repository names in Actions log
+    required: true
+    default: true
+
+outputs:
+  base-epoch:
+    description: |
+      Unix epoch used to calculate `retension-days`.
+      Set this to NON dry-run to prevent accidental deletion of repositories.
+
+runs:
+  using: "node16"
+  main: "lib/index.js"
