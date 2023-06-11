@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "build": "npx ncc build -o lib src/index.ts"
+  },
   "devDependencies": {
     "@vercel/ncc": "^0.36.1",
     "typescript": "^5.1.3"

@@ -24,7 +24,8 @@ async function run() {
 
     // list all repositories
     const repos = await octokit.paginate(octokit.rest.repos.listForUser, {
-        username: namespace
+        username: namespace,
+        type: "all"
     })
 
     // construct target list
@@ -53,7 +54,7 @@ async function run() {
         const pushedAt = new Date(repo.pushed_at || 0).valueOf() / 1000
         core.debug(`pushedAt: ${pushedAt}`)
         if (pushedAt > deleteOlderThanEpoch) {
-            core.info(`Skip: ${repo.full_name} (has no pushes in last ${retensionDays} days)`)
+            core.info(`Skip: ${repo.full_name} (has pushes in last ${retensionDays} days)`)
             continue
         }
 
