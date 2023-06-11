@@ -22,7 +22,9 @@ async function run() {
     const octokit = github.getOctokit(githubPAT)
 
     // list all repositories
-    const repos = await octokit.paginate(octokit.rest.repos.listForAuthenticatedUser, {})
+    const repos = await octokit.paginate(octokit.rest.repos.listForAuthenticatedUser, {
+        affiliation: "owner"
+    })
 
     // construct target list
     const targets: Repository[] = []
