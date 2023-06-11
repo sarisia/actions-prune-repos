@@ -6,6 +6,10 @@ inputs:
   github-pat:
     description: GitHub Personal Access Token. Workflow's GITHUB_TOKEN won't work
     required: true
+  namespace:
+    description: GitHub user / org
+    required: true
+    default: ${{ github.repository_owner }}
   keep-topics:
     description: Repositories which has topics defined here are excluded from deletion
     required: false

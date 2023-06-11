@@ -4,6 +4,7 @@ import { Repository } from "./models"
 
 async function run() {
     // gather outputs
+    const namespace = core.getInput("namespace", { required: true }).toLowerCase()
     const keepTopicsSet = (core.getMultilineInput("keep-topics") || [])
         .filter(v => v)
         .reduce((acc, cur) => acc.add(cur), new Set<string>())
@@ -22,13 +23,16 @@ async function run() {
     const octokit = github.getOctokit(githubPAT)
 
     // list all repositories
-    const repos = await octokit.paginate(octokit.rest.repos.listForAuthenticatedUser, {
-        affiliation: "owner"
-    })
+    const repos = await octokit.paginate(octokit.rest.repos.listForAuthenticatedUser, {})
 
     // construct target list
     const targets: Repository[] = []
     for (const repo of repos) {
+        // check namespace
+        if (repo.owner.login.toLowerCase() != namespace) {
+            continue
+        }
+
         core.debug(`Repository: ${repo.full_name}`)
 
         if (maskPrivateRepository && repo.private) {
