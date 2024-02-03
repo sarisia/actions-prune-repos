@@ -9,12 +9,24 @@ async function run() {
         .filter(v => v)
         .reduce((acc, cur) => acc.add(cur), new Set<string>())
     const retensionDays = parseInt(core.getInput("retension-days", { required: true }))
-    const baseEpoch = parseFloat(core.getInput("base-epoch")) || (Date.now() / 1000)
-    const deleteOlderThanEpoch = baseEpoch - (retensionDays * 60 * 60 * 24)
     const maskPrivateRepository = core.getBooleanInput("mask-private-repository", { required: true })
     const githubPAT = core.getInput("github-pat", { required: true })
     const dryRun = core.getBooleanInput("dry-run", { required: true })
     core.setSecret(githubPAT)
+
+    const baseEpochInput = core.getInput("base-epoch")
+    // default to current timestamp
+    let baseEpoch = Date.now() / 1000
+    if (baseEpochInput !== "") {
+        // base-epoch is set, let's parse them
+        const parsed = parseFloat(baseEpochInput)
+        if (Number.isNaN(parsed)) {
+            throw new Error("input `base-epoch` is set but invalid number, aborted for safety!")
+        }
+
+        baseEpoch = parsed
+    }
+    const deleteOlderThanEpoch = baseEpoch - (retensionDays * 60 * 60 * 24)
 
     core.debug(`keepTopicsSet: ${[...keepTopicsSet.keys()]}`)
     core.debug(`baseEpoch: ${baseEpoch}`)
